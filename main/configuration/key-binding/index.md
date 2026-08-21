@@ -1,5 +1,9 @@
 # Key Binding
 
+Note
+
+The snippets on this page must go in your shell's startup file (`~/.bashrc`, `~/.zshrc`, `~/.config/fish/config.fish`, etc.) — the same file where you run `atuin init`. Custom bindings that set `ATUIN_NOBIND` and bind keys afterwards only take effect if they run at shell startup. Running them once in an interactive session, or placing them in a file your shell does not source, has no lasting effect.
+
 ## Custom up arrow filter mode
 
 It can be useful to use a different filter or search mode on the up arrow. For example, you could use ctrl-r for searching globally, but the up arrow for searching history from the current directory only.
@@ -114,6 +118,7 @@ atuin-bind [-m KEYMAP] KEYSEQ COMMAND
 | `atuin-up-search-emacs` | Search command for `up` or similar keys, with the `emacs` keymap mode      |
 | `atuin-up-search-viins` | Search command for `up` or similar keys, with the `vim-insert` keymap mode |
 | `atuin-up-search-vicmd` | Search command for `up` or similar keys, with the `vim-normal` keymap mode |
+| (other strings)         | The strings are executed as shell commands                                 |
 
 The keymap mode controls the initial keymap in the Atuin search and is determined in combination with the config [`keymap_mode`](https://docs.atuin.sh/configuration/config/#keymap_mode) (`atuin >= 18.0`).
 
@@ -132,6 +137,8 @@ atuin-bind '\eOA' atuin-up-search
 ```
 
 With older versions of Atuin, the user needs to bind a bindable shell function "`__atuin_history`" directly using Bash's `bind`. The flag `--shell-up-key-binding` can be optionally specified to the first argument for keybindings to the `up` key or similar keys. For the keybindings in the `vi` editing mode, the options `--keymap-mode=vim-insert` and the keymap mode `--keymap-mode=vim-normal` (`atuin >= 18.0`) can be additionally specified to the shell function `__atuin_history`.
+
+Inside `COMMAND`, `__atuin_accept_line "string"` can be used to execute the string as a command. Similarly, `__atuin_insert_line "string"` can be used to insert the string into the buffer of the line editor. They're designed to work also in Bash 3.2, where `READLINE_LINE` isn't supported.
 
 ## fish
 

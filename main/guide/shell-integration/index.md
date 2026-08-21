@@ -23,13 +23,14 @@ If any of these conditions aren't met, Atuin won't install its hooks, and it won
 
 When Atuin initializes, it sets several environment variables:
 
-| Variable               | Purpose                                                                     |
-| ---------------------- | --------------------------------------------------------------------------- |
-| `ATUIN_SESSION`        | Unique identifier for this shell session                                    |
-| `ATUIN_SHLVL`          | Tracks shell nesting level                                                  |
-| `ATUIN_HISTORY_ID`     | Temporary ID for the currently executing command                            |
-| `ATUIN_HISTORY_AUTHOR` | Optional command author identity (for example `ellie`, `claude`, `copilot`) |
-| `ATUIN_HISTORY_INTENT` | Optional command intent/rationale text                                      |
+| Variable                    | Purpose                                                                                                                                                              |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ATUIN_SESSION`             | Unique identifier for this shell session                                                                                                                             |
+| `ATUIN_SHLVL`               | Tracks shell nesting level                                                                                                                                           |
+| `ATUIN_HISTORY_ID`          | Temporary ID for the currently executing command                                                                                                                     |
+| `ATUIN_HISTORY_AUTHOR`      | Optional command author identity (for example `ellie`, `claude`, `copilot`). A known agent name here marks entries as agent-run, unless it's also the local username |
+| `ATUIN_HISTORY_AUTHOR_KIND` | Optional: `user` or `agent`, overriding the classification inferred from the author name. Only applies when an author is stated                                      |
+| `ATUIN_HISTORY_INTENT`      | Optional command intent/rationale text                                                                                                                               |
 
 Atuin uses these variables internally to track command execution and associate commands with sessions. If `ATUIN_HISTORY_AUTHOR` isn't set, Atuin defaults to the local shell username.
 
@@ -37,7 +38,7 @@ Atuin uses these variables internally to track command execution and associate c
 
 Many development tools include embedded terminals:
 
-- **IDEs**: PyCharm, IntelliJ, VS Code, Cursor, Zed
+- **IDEs**: JetBrains' RustRover and PyCharm, IntelliJ, VS Code, Cursor, Zed
 - **AI coding assistants**: Claude Code, GitHub Copilot CLI, Aider
 - **Container environments**: Docker, Podman, devcontainers
 
@@ -67,7 +68,7 @@ If you want Atuin to record commands from an embedded terminal, you'll need to m
 
 Most IDEs let you customize the shell command used for their integrated terminal:
 
-**PyCharm / IntelliJ:**
+**JetBrains IDEs (RustRover, PyCharm, IntelliJ):**
 
 1. Go to Settings → Tools → Terminal
 1. Change "Shell path" to include the `-i` flag:

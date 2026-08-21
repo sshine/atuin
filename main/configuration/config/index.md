@@ -100,12 +100,11 @@ sync_frequency = "1h"
 
 Default: `fuzzy`
 
-Which search mode to use. Atuin supports `prefix`, `fulltext`, `fuzzy`, `daemon-fuzzy`, and `skim` search modes.
+Which search mode to use. Atuin supports `prefix`, `fulltext`, `fuzzy`, and `daemon-fuzzy` search modes.
 
 - `prefix` mode searches for "query\*".
 - `fulltext` mode searches for "\*query\*".
 - `fuzzy` applies the [fuzzy search syntax](#fuzzy-search-syntax).
-- `skim` applies the [skim search syntax](https://github.com/lotabout/skim#search-syntax).
 
 ```
 search_mode = "fuzzy"
@@ -127,9 +126,7 @@ autostart = true
 
 You can customize the priority given to frequency, recency, and frecency scores in this mode. See [the score multipliers section](#score-multipliers) for more information.
 
-Interactive-only modes
-
-The `daemon-fuzzy` and `skim` modes take effect only for interactive TUI searches. Non-interactive `atuin search` commands will treat these modes as `fuzzy` instead.
+Note: in non-interactive searches (manually running `atuin search` from the command line), `daemon-fuzzy` behaves like `fuzzy`.
 
 #### `fuzzy` search syntax
 
@@ -845,6 +842,10 @@ Requirements
 - tmux >= 3.2, which is where `display-popup` gained the behavior Atuin needs
 - zsh, bash, or fish — nushell, xonsh, and PowerShell don't support the popup yet
 
+iTerm2's native tmux integration
+
+iTerm2's native tmux integration (control mode, `tmux -CC`) can't display `tmux display-popup` popups, and Atuin can't detect this to fall back automatically. If you rely on it, keep `[tmux] enabled = false` (the default) so the search UI renders inline.
+
 These settings are read by `atuin init` and passed to the shell plugin through environment variables, so **restart your shell after changing them**. To disable the popup for a single session without touching your config, set `ATUIN_TMUX_POPUP=false` before Atuin's key bindings run.
 
 ### `enabled`
@@ -914,15 +915,15 @@ sync_frequency = 300
 
 ### `socket_path`
 
-Default:
+Default if \[`systemd_socket`\] is false: `$TMPDIR/atuin-$UID/atuin.sock`, where `$UID` is your [user ID](https://en.wikipedia.org/wiki/User_identifier). `$TMPDIR` defaults to `/tmp` if unset.
 
-```
-socket_path = "~/.local/share/atuin/atuin.sock"
-```
+Default if \[`systemd_socket`\] is true: `$XDG_RUNTIME_DIR/atuin.sock` if `$XDG_RUNTIME_DIR` is set, otherwise `$TMPDIR/atuin-$UID/atuin.sock`.
 
-Where to bind a Unix socket for client -> daemon communication
+[`systemd_socket`](#systemd_socket)
 
-If XDG_RUNTIME_DIR is available, Atuin uses this directory instead.
+Where to bind a Unix socket for client -> daemon communication.
+
+Older versions of Atuin used to listen on `$XDG_RUNTIME_DIR/atuin.sock` if `$XDG_RUNTIME_DIR` was set, otherwise `$XDG_DATA_HOME/atuin/atuin.sock` if `$XDG_DATA_HOME` was set, otherwise `~/.local/share/atuin/atuin.sock`. If you don't manually set `socket_path` in your config, Atuin will still look for an existing socket at the old path, as an older version of the daemon may be running there.
 
 ### `pidfile_path`
 
@@ -943,6 +944,8 @@ Use a socket passed via systemd socket activation protocol instead of the path
 ```
 systemd_socket = false
 ```
+
+Note: setting this to true changes the default value of [`socket_path`](#socket_path).
 
 ### `tcp_port`
 
@@ -1164,7 +1167,7 @@ Syntax highlight commands in the search results, parsed with the grammar for the
 
 The default colors are ANSI palette colors, so they automatically match your terminal's color scheme. They can also be customized via the `Syntax*` keys in a [theme](https://docs.atuin.sh/guide/theming/index.md).
 
-Not available on platforms where tree-sitter doesn't build (for example, Windows), so commands are shown unhighlighted there.
+Not available on platforms where tree-sitter doesn't build, so commands are shown unhighlighted there.
 
 ```
 syntax_highlight = false
